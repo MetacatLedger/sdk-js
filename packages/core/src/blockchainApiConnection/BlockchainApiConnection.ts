@@ -15,7 +15,7 @@ import Blockchain from '../blockchain/Blockchain'
 export const DEFAULT_WS_ADDRESS =
   process.env.DEFAULT_WS_ADDRESS || 'ws://127.0.0.1:9944'
 
-let instance: Promise<Blockchain> | null
+let instance: Blockchain | null
 
 export const CUSTOM_TYPES: RegistryTypes = {
   DelegationNodeId: 'Hash',
@@ -45,13 +45,26 @@ export async function getCached(
   host: string = DEFAULT_WS_ADDRESS
 ): Promise<Blockchain> {
   if (!instance) {
-    instance = buildConnection(host)
+    instance = await buildConnection(host)
   }
   return instance
 }
 
 export function clearCache(): void {
   instance = null
+}
+
+export async function connected(): Promise<boolean> {
+  return !!instance && instance.api.isConnected
+}
+
+export async function disconnect(): Promise<boolean> {
+  const isConnected = await connected()
+  if (isConnected) {
+    await instance?.api.disconnect()
+  }
+  clearCache()
+  return isConnected
 }
 
 export default getCached
