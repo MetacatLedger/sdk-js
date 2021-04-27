@@ -7,8 +7,9 @@ import type { BalanceOptions } from '@kiltprotocol/types'
 import {
   formatKiltBalance,
   convertToTxUnit,
-  asFemtoKilt,
+  toFemtoKilt,
   TRANSACTION_FEE,
+  fromFemtoKilt,
 } from './Balance.utils'
 
 const TESTVALUE = new BN('123456789000')
@@ -116,9 +117,16 @@ describe('convertToTxUnit', () => {
 })
 describe('asFemtoKilt', () => {
   it('converts whole KILT to femtoKilt using convertToTxUnit', () => {
-    expect(new BN(asFemtoKilt(new BN(1000)).toString())).toEqual(
+    expect(new BN(toFemtoKilt(new BN(1000)).toString())).toEqual(
       new BN('1000000000000000000')
     )
+  })
+})
+describe('fromFemtoKilt', () => {
+  it('converts femtoKilt to whole KILT using convertToTxUnit', () => {
+    expect(
+      new BN(fromFemtoKilt(new BN('1000000000000000000')).toString())
+    ).toEqual(new BN('1000'))
   })
 })
 
